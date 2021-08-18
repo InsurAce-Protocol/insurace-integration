@@ -1,0 +1,9 @@
+{
+  "name": "insurace-examples",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "ethers": "^5.4.4"
+  }
+}
