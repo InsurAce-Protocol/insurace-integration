@@ -1,0 +1,25 @@
+{
+  "name": "buycover-sol",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prettier:sol": "prettier --write contracts/**/*.sol",
+    "solhint": "solhint contracts/**/*.sol"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm run prettier:sol && npm run solhint && npx hardhat compile"
+    }
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "hardhat": "^2.6.1",
+    "husky": "^3.0.9",
+    "prettier": "^2.3.2",
+    "prettier-plugin-solidity": "*",
+    "solhint": "^3.3.6",
+    "solhint-plugin-prettier": "^0.0.5"
+  }
+}
