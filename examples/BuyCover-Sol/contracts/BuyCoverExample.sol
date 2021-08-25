@@ -17,11 +17,11 @@
 
 // SPDX-License-Identifier: GPL-3.0
 
-pragma solidity ^0.7.3;
+pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/math/SafeMathUpgradeable.sol";
-import "./ICover.sol"
+import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
+import {ICover} from "./ICover.sol";
 
 contract BuyCoverExample is OwnableUpgradeable {
     using SafeMathUpgradeable for uint256;
@@ -37,6 +37,39 @@ contract BuyCoverExample is OwnableUpgradeable {
         coverContractAddress = _coverContractAddress;
     }
 
+    function myOwnBuyCoverFunc(
+        uint16[] memory products,
+        uint16[] memory durationInDays,
+        uint256[] memory amounts,
+        address currency,
+        address owner,
+        uint256 referralCode,
+        uint256 premiumAmount,
+        uint256[] memory helperParameters,
+        uint256[] memory securityParameters,
+        uint8 v,
+        bytes32 r,
+        bytes32 s
+    ) external payable {
+        require(coverContractAddress != address(0), "myOwnBuyCoverFunc:1");
 
+        // ensure you have enough premium in current contract as the coverContract will utilize
+        // safeTransferFrom for ERC20 token or
+        // check msg.value in case you are using native token
 
+        ICover(coverContractAddress).buyCover(
+            products,
+            durationInDays,
+            amounts,
+            currency,
+            owner,
+            referralCode,
+            premiumAmount,
+            helperParameters,
+            securityParameters,
+            v,
+            r,
+            s
+        );
+    }
 }
