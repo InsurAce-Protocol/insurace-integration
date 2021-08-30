@@ -47,9 +47,9 @@ contract BuyCoverExample is OwnableUpgradeable {
         uint256 premiumAmount,
         uint256[] memory helperParameters,
         uint256[] memory securityParameters,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
+        uint8[] memory v,
+        bytes32[] memory r,
+        bytes32[] memory s
     ) external payable {
         require(coverContractAddress != address(0), "myOwnBuyCoverFunc:1");
 
