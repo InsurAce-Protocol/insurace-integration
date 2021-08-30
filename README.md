@@ -1,4 +1,4 @@
-# insurace-examples
+# insurace-integration
 
 ### Getting Started
 Click on the `examples` folder for a list of examples.
@@ -7,10 +7,7 @@ Click on the `examples` folder for a list of examples.
 Buy cover example when programming off-chain
 
 #### BuyCover-Sol
-Using buyCover smart contract ABI to integrate into your own smart contract call.
+Integrate buyCover smart contract ABI into your own smart contract call.
 
-
-### Build Project
-```
-npm ci
-```
+### Tutorial
+Please check our [documentation](https://docs.insurace.io/landing-page/documentation-1/api-docs/apis-for-service-integration) for detailed explanation.

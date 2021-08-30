@@ -31,8 +31,8 @@ const jsonRpcUrl = '';
 // The private key of a wallet that is used to purchase this cover.
 const privateKey = '';
 
-// The address of InsurAce Cover contract, ask InsurAce team to get address, different chain has different addresses.
-const contractAddress = 'xxxx';
+// The address of InsurAce Cover contract. Please contact InsurAce team to get the contract address. Different chains have different addresses.
+const contractAddress = '';
 
 // The URL of InsurAce API.
 const httpApiUrl = 'https://api.insurace.io/ops/v1';

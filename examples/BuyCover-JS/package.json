@@ -1,9 +1,9 @@
 {
-  "name": "insurace-examples",
+  "name": "buycover-js",
   "version": "1.0.0",
   "description": "",
   "dependencies": {
     "axios": "^0.21.1",
-    "ethers": "^5.4.4"
+    "ethers": "^5.4.6"
   }
 }
