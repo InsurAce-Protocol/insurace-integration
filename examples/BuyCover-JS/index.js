@@ -108,7 +108,7 @@ async function confirmCoverPremium({ chain, params }) {
 
 async function buyCover(wallet, params) {
   const contractAbi = [
-    'function buyCover(uint16[] products, uint16[] durationInDays, uint256[] amounts, address currency, address owner, uint256 referralCode, uint256 premiumAmount, uint256[] helperParameters, uint256[] securityParameters, uint8 v, bytes32 r, bytes32 s) payable',
+    'function buyCover(uint16[] products, uint16[] durationInDays, uint256[] amounts, address currency, address owner, uint256 referralCode, uint256 premiumAmount, uint256[] helperParameters, uint256[] securityParameters, uint8[] v, bytes32[] r, bytes32[] s) payable',
   ];
 
   const contract = new Contract(contractAddress, contractAbi, wallet);
