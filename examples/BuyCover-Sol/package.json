@@ -23,6 +23,6 @@
     "solhint-plugin-prettier": "^0.0.5"
   },
   "dependencies": {
-    "@openzeppelin/contracts-upgradeable": "^4.3.0"
+    "@openzeppelin/contracts-upgradeable": "^4.3.1"
   }
 }
