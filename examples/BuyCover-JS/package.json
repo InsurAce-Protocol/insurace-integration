@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.3",
     "ethers": "^5.4.6"
   }
 }
