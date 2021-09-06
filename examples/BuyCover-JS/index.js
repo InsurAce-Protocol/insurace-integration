@@ -40,7 +40,7 @@ const httpApiUrl = 'https://api.insurace.io/ops/v1';
 // The code that allows consumers to access InsurAce API.
 const httpApiCode = '';
 
-// The blockchain that the cover purchase transaction is sent to. Valid values are ETH or BSC.
+// The blockchain that the cover purchase transaction is sent to. Valid values are ETH, BSC, POLYGON.
 const chain = 'ETH';
 
 // The product IDs for this cover purchase. Can be more than 1 product IDs. Please check https://docs.insurace.io/landing-page/documentation/protocol-design/product-design/product-list for a complete list of products.
@@ -62,6 +62,7 @@ const referralCode = null;
 // Functions
 // -------------------------------------------------------------------------------------------------
 
+// Visit https://api.insurace.io/docs for detailed API documentation.
 async function getCoverPremium({ chain, productIds, coverDays, coverAmounts, coverCurrency, owner, referralCode }) {
   const body = {
     chain,
@@ -87,6 +88,7 @@ async function getCoverPremium({ chain, productIds, coverDays, coverAmounts, cov
   };
 }
 
+// Visit https://api.insurace.io/docs for detailed API documentation.
 async function confirmCoverPremium({ chain, params }) {
   const body = {
     chain,
