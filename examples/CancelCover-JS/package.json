@@ -1,0 +1,8 @@
+{
+  "name": "cancelcover-js",
+  "version": "1.0.0",
+  "description": "",
+  "dependencies": {
+    "ethers": "^5.6.1"
+  }
+}
