@@ -17,7 +17,6 @@
 
 // SPDX-License-Identifier: GPL-3.0
 
-
 const axios = require('axios');
 const { Contract, providers, utils, Wallet } = require('ethers');
 
@@ -31,7 +30,8 @@ const jsonRpcUrl = '';
 // The private key of a wallet that is used to purchase this cover.
 const privateKey = '';
 
-// The address of InsurAce Cover contract. Please contact InsurAce team to get the contract address. Different chains have different addresses.
+// The address of InsurAce Cover contract. Please contact InsurAce team to get the contract address.
+// Different chains have different addresses.
 const contractAddress = '';
 
 // The URL of InsurAce API.
@@ -40,20 +40,31 @@ const httpApiUrl = 'https://api.insurace.io/ops/v1';
 // The code that allows consumers to access InsurAce API.
 const httpApiCode = '';
 
-// The blockchain that the cover purchase transaction is sent to. Valid values are ETH, BSC, POLYGON.
+// The blockchain that the cover purchase transaction is sent to. Valid values are ETH, BSC,
+// POLYGON, AVALANCHE.
 const chain = 'ETH';
 
-// The product IDs for this cover purchase. Can be more than 1 product IDs. Please check https://docs.insurace.io/landing-page/documentation/protocol-design/product-design/product-list for a complete list of products.
+// The address of the token used to specify the cover amount. Please check
+// https://api.insurace.io/docs for a list of tokens that can be used to purchase covers.
+const coverCurrency = '';
+
+// The address of the token used to purchase this cover. Must be the same as coverCurrency.
+const premiumCurrency = '';
+
+// The product IDs for this cover purchase. Can be more than 1 product IDs. Please check
+// https://docs.insurace.io/landing-page/documentation/protocol-design/product-design/product-list
+// for a complete list of products.
 const productIds = [1, 2];
 
 // The cover period (in days) for each product.
-const coverDays = [30, 365];
+const coverDays = [30, 90];
 
 // The cover amount for each product.
-const coverAmounts = [utils.parseEther('1000'), utils.parseEther('2000')];
+const coverAmounts = [utils.parseEther('1000').toString(), utils.parseEther('2000').toString()];
 
-// The address of the token used to purchase this cover. Please check https://api.insurace.io/docs for a list of tokens that can be used to purchase covers.
-const coverCurrency = '';
+// The wallet addresses protected by the cover for each product. Each product must correspond to
+// a wallet addresses (the same wallet address may be specified multiple times).
+const coveredAddresses = [];
 
 // The referral code used in this cover purchase, may be null.
 const referralCode = null;
@@ -63,15 +74,17 @@ const referralCode = null;
 // -------------------------------------------------------------------------------------------------
 
 // Visit https://api.insurace.io/docs for detailed API documentation.
-async function getCoverPremium({ chain, productIds, coverDays, coverAmounts, coverCurrency, owner, referralCode }) {
+async function getCoverPremium(option) {
   const body = {
-    chain,
-    productIds,
-    coverDays,
-    coverAmounts,
-    coverCurrency,
-    owner,
-    referralCode,
+    chain: option.chain,
+    owner: option.owner,
+    coverCurrency: option.coverCurrency,
+    premiumCurrency: option.premiumCurrency,
+    productIds: option.productIds,
+    coverDays: option.coverDays,
+    coverAmounts: option.coverAmounts,
+    coveredAddresses: option.coveredAddresses,
+    referralCode: option.referralCode,
   };
 
   const options = {
@@ -80,7 +93,7 @@ async function getCoverPremium({ chain, productIds, coverDays, coverAmounts, cov
     },
   };
 
-  const { data } = await axios.post(httpApiUrl + '/getCoverPremium', body, options);
+  const { data } = await axios.post(httpApiUrl + '/getCoverPremiumV2', body, options);
 
   return {
     premium: data.premiumAmount,
@@ -89,10 +102,10 @@ async function getCoverPremium({ chain, productIds, coverDays, coverAmounts, cov
 }
 
 // Visit https://api.insurace.io/docs for detailed API documentation.
-async function confirmCoverPremium({ chain, params }) {
+async function confirmCoverPremium(option) {
   const body = {
-    chain,
-    params,
+    chain: option.chain,
+    params: option.params,
   };
 
   const options = {
@@ -101,7 +114,7 @@ async function confirmCoverPremium({ chain, params }) {
     },
   };
 
-  const { data } = await axios.post(httpApiUrl + '/confirmCoverPremium', body, options);
+  const { data } = await axios.post(httpApiUrl + '/confirmCoverPremiumV2', body, options);
 
   return {
     params: data,
@@ -110,12 +123,12 @@ async function confirmCoverPremium({ chain, params }) {
 
 async function buyCover(wallet, params) {
   const contractAbi = [
-    'function buyCover(uint16[] products, uint16[] durationInDays, uint256[] amounts, address currency, address owner, uint256 referralCode, uint256 premiumAmount, uint256[] helperParameters, uint256[] securityParameters, uint8[] v, bytes32[] r, bytes32[] s) payable',
+    'function buyCoverV3(uint16[] products, uint16[] durationInDays, uint256[] amounts, address[] addresses, uint256 premiumAmount, uint256 referralCode, uint256[] helperParameters, uint256[] securityParameters, string freeText, uint8[] v, bytes32[] r, bytes32[] s) payable',
   ];
 
   const contract = new Contract(contractAddress, contractAbi, wallet);
 
-  const response = await contract.buyCover(params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7], params[8], params[9], params[10], params[11]);
+  const response = await contract.buyCoverV3(params[0], params[1], params[2], params[3], params[4], params[5], params[6], params[7], params[8], params[9], params[10], params[11]);
 
   const receipt = await response.wait();
 
@@ -133,12 +146,14 @@ async function main() {
   console.log('1. Get premium');
 
   const premiumInfo = await getCoverPremium({
-    owner: wallet.address,
     chain,
+    owner: wallet.address,
+    coverCurrency,
+    premiumCurrency,
     productIds,
     coverDays,
     coverAmounts,
-    coverCurrency,
+    coveredAddresses,
     referralCode,
   });
 
