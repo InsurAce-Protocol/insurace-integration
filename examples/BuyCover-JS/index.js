@@ -66,6 +66,10 @@ const coverAmounts = [utils.parseEther('1000').toString(), utils.parseEther('200
 // a wallet addresses (the same wallet address may be specified multiple times).
 const coveredAddresses = [];
 
+// The user IDs of the custodian platform accounts protected by Custodian Risk Cover. For
+// non-Custodian Risk Cover, the corresponding array element must be an empty string.
+const coveredAccounts = [];
+
 // The referral code used in this cover purchase, may be null.
 const referralCode = null;
 
@@ -84,6 +88,7 @@ async function getCoverPremium(option) {
     coverDays: option.coverDays,
     coverAmounts: option.coverAmounts,
     coveredAddresses: option.coveredAddresses,
+    coveredAccounts: option.coveredAccounts,
     referralCode: option.referralCode,
   };
 
@@ -93,12 +98,18 @@ async function getCoverPremium(option) {
     },
   };
 
-  const { data } = await axios.post(httpApiUrl + '/getCoverPremiumV2', body, options);
+  try {
+    const { data } = await axios.post(httpApiUrl + '/getCoverPremiumV2', body, options);
 
-  return {
-    premium: data.premiumAmount,
-    params: data.params,
-  };
+    return {
+      premium: data.premiumAmount,
+      params: data.params,
+    };
+  } catch (error) {
+    console.log('Failed to get premium.', error?.response?.data?.message);
+
+    throw error;
+  }
 }
 
 // Visit https://api.insurace.io/docs for detailed API documentation.
@@ -114,11 +125,17 @@ async function confirmCoverPremium(option) {
     },
   };
 
-  const { data } = await axios.post(httpApiUrl + '/confirmCoverPremiumV2', body, options);
+  try {
+    const { data } = await axios.post(httpApiUrl + '/confirmCoverPremiumV2', body, options);
 
-  return {
-    params: data,
-  };
+    return {
+      params: data,
+    };
+  } catch (error) {
+    console.log('Failed to confirm premium.', error?.response?.data?.message);
+
+    throw error;
+  }
 }
 
 async function buyCover(wallet, params) {
@@ -143,35 +160,40 @@ async function main() {
   const provider = new providers.JsonRpcProvider(jsonRpcUrl);
   const wallet = new Wallet(privateKey, provider);
 
-  console.log('1. Get premium');
+  try {
+    console.log('1. Get premium');
 
-  const premiumInfo = await getCoverPremium({
-    chain,
-    owner: wallet.address,
-    coverCurrency,
-    premiumCurrency,
-    productIds,
-    coverDays,
-    coverAmounts,
-    coveredAddresses,
-    referralCode,
-  });
+    const premiumInfo = await getCoverPremium({
+      chain,
+      owner: wallet.address,
+      coverCurrency,
+      premiumCurrency,
+      productIds,
+      coverDays,
+      coverAmounts,
+      coveredAddresses,
+      coveredAccounts,
+      referralCode,
+    });
 
-  console.log(`Premium = ${utils.formatEther(premiumInfo.premium)}`);
+    console.log(`Premium = ${utils.formatEther(premiumInfo.premium)}`);
 
-  console.log('2. Confirm premium');
+    console.log('2. Confirm premium');
 
-  const confirmInfo = await confirmCoverPremium({
-    chain,
-    params: premiumInfo.params,
-  });
+    const confirmInfo = await confirmCoverPremium({
+      chain,
+      params: premiumInfo.params,
+    });
 
-  console.log('3. Purchase cover');
+    console.log('3. Purchase cover');
 
-  const receipt = await buyCover(wallet, confirmInfo.params);
+    const receipt = await buyCover(wallet, confirmInfo.params);
 
-  console.log('Cover purchase successful.');
-  console.log(`Transaction hash: ${receipt.transactionHash}`);
+    console.log('Cover purchase successful.');
+    console.log(`Transaction hash: ${receipt.transactionHash}`);
+  } catch (error) {
+    console.log('Failed to buy cover.', error.message);
+  }
 }
 
 main();

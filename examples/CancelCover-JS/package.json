@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "dependencies": {
-    "ethers": "^5.6.1"
+    "ethers": "^5.7.2"
   }
 }
